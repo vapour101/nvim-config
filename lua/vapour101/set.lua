@@ -1,38 +1,40 @@
-local g = vim.g
-local o = vim.opt
+vim.opt.nu = true
+vim.opt.relativenumber = true
 
-o.nu = true
-o.relativenumber = true
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
 
-o.tabstop = 4
-o.softtabstop = 4
-o.shiftwidth = 4
-o.expandtab = true
+vim.opt.smartindent = true
 
-o.hlsearch = false
-o.incsearch = true
+vim.opt.wrap = false
 
-o.smartindent = true
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
+vim.opt.undofile = true
 
-o.wrap = false
+vim.opt.hlsearch = false
+vim.opt.incsearch = true
 
-o.swapfile = false
-o.backup = false
+--vim.opt.termguicolors = true
 
-o.scrolloff = 8
-o.signcolumn = "yes"
+vim.opt.scrolloff = 16
+vim.opt.signcolumn = "yes"
+vim.opt.isfname:append("@-@")
 
-o.pumblend = 30
-o.winblend = 30
+vim.opt.updatetime = 50
 
-o.cmdheight = 1
+vim.opt.colorcolumn = "80"
 
-o.updatetime = 50
+vim.opt.pumblend = 30
+vim.opt.winblend = 30
 
-o.colorcolumn = "80"
+vim.opt.cmdheight = 1
 
-g.mapleader = " "
-g.netrw_keepdir = 0
+vim.g.mapleader = " "
+vim.g.netrw_keepdir = 0
 
 vim.diagnostic.config({
     virtual_text = false,

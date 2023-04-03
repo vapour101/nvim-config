@@ -1,46 +1,67 @@
-local nnoremap = require("vapour101.keymap").nnoremap
+local lsp = require('lsp-zero')
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-    -- Enable completion triggered by <c-x><c-o>
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+lsp.preset('recommended')
 
-    -- Mappings.
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
-    -- silent=true,
-    local bufopts = { buffer=bufnr }
-    nnoremap('gD', vim.lsp.buf.declaration, bufopts)
-    nnoremap('gd', vim.lsp.buf.definition, bufopts)
-    nnoremap('K', vim.lsp.buf.hover, bufopts)
-    nnoremap('gi', vim.lsp.buf.implementation, bufopts)
-    nnoremap('<C-k>', vim.lsp.buf.signature_help, bufopts)
-    nnoremap('<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-    nnoremap('<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-    nnoremap('<leader>wl', function()
-        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, bufopts)
-    nnoremap('<leader>D', vim.lsp.buf.type_definition, bufopts)
-    nnoremap('<leader>rn', vim.lsp.buf.rename, bufopts)
-    nnoremap('<leader>ca', vim.lsp.buf.code_action, bufopts)
-    nnoremap('gr', vim.lsp.buf.references, bufopts)
-    nnoremap('<leader>f', function() vim.lsp.buf.format { async = true } end, bufopts)
-end
-
-require("rust-tools").setup {
-    server = {
-        on_attach = on_attach,
-        cmd = {"rustup", "run", "stable", "rust-analyzer"},
-        settings = {
-            ["rust-analyzer"] = {
-                checkOnSave = {
-                    command = "clippy"
-                },
-            }
-        },
-    },
+lsp.ensure_installed {
+	'tsserver',
+	'eslint',
+	'lua_ls',
+	'rust_analyzer',
 }
 
-require("lspconfig").volar.setup {
-    on_attach = on_attach
+lsp.configure('lua_ls', {
+	settings = {
+		Lua = {
+			runtime = {
+				version = 'LuaJIT',
+			},
+			diagnostics = {
+				globals = { 'vim' }
+			},
+			workspace = {
+				library = vim.api.nvim_get_runtime_file("", true),
+			},
+			telemetry = {
+				enable = false,
+			}
+		}
+	}
+})
+
+local cmp = require('cmp')
+local cmp_select = { behavior = cmp.SelectBehavior.Select }
+local cmp_mappings = lsp.defaults.cmp_mappings {
+	['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+	['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+	['<C-y>'] = cmp.mapping.confirm { select = true },
+	['<C-Space>'] = cmp.mapping.complete(),
 }
+
+--[[
+lsp.set_preferences {
+	sign_icons = { }
+}
+--]]
+
+lsp.setup_nvim_cmp {
+	mapping = cmp_mappings
+}
+
+lsp.on_attach(function(_client, bufnr)
+	local opts = { buffer = bufnr, remap = false }
+
+    vim.keymap.set("n", 'gD', vim.lsp.buf.declaration, bufopts)
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+    vim.keymap.set("n", 'gi', vim.lsp.buf.implementation, bufopts)
+	vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, opts)
+	vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, opts)
+	vim.keymap.set("n", "[d", vim.diagnostic.goto_next, opts)
+	vim.keymap.set("n", "]d", vim.diagnostic.goto_prev, opts)
+	vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, opts)
+	vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, opts)
+	vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
+end)
+
+lsp.setup()
