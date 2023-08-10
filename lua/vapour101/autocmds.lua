@@ -10,10 +10,3 @@ autocmd({"BufWritePre"}, {
     desc = "Remove trailing whitespace on save",
 })
 
-autocmd({"BufWritePre"}, {
-    group = my_group,
-    pattern = "*",
-    command = [[$s/^.\+$/&\r/e]],
-    desc = "Ensure files end with a newline",
-})
-

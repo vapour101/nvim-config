@@ -14,9 +14,14 @@ return require("packer").startup(function(use)
 	use "mbbill/undotree"
 	use "tpope/vim-fugitive"
 
+    use {
+        "hiphish/rainbow-delimiters.nvim",
+        requires = "nvim-treesitter",
+    }
+
 	use {
 		"VonHeikemen/lsp-zero.nvim",
-		branch = 'v1.x',
+		branch = 'v2.x',
 		requires = {
 			-- LSP Support
 			{'neovim/nvim-lspconfig'},
